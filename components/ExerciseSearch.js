@@ -15,8 +15,7 @@ import {
 } from "../atoms/workoutAtom";
 import Exercise from "./Exercise";
 
-const ExerciseSearch = () => {
-  const exercises = useRecoilValue(exerciseState);
+const ExerciseSearch = ({ closeModal }) => {
   const exerciseImages = useRecoilValue(exerciseImageState);
   const [workout, setWorkout] = useRecoilState(workoutState);
   const [selectedExercise, setSelectedExercise] = useState();
@@ -30,34 +29,40 @@ const ExerciseSearch = () => {
   };
 
   return (
-    <View>
-      <Text>ExerciseSearch</Text>
-      <TouchableOpacity onPress={addExercise}>
-        <Text>Add</Text>
-      </TouchableOpacity>
+    <View style={styles.container}>
+      <Text style={styles.header}>Exercises</Text>
       <FlatList
         data={exerciseImages}
         keyExtractor={(exercise, index) => index}
         renderItem={({ item }) => {
-          let urlString = item.image;
-
+          const urlString = item.image;
           let pathnameParts = urlString.split("/");
-          let exerciseId = pathnameParts[pathnameParts.length - 2]; // The number is the second last part of the path
+          let exerciseId = pathnameParts[pathnameParts.length - 2];
 
-          return <Exercise image={urlString} uuid={parseInt(exerciseId)} />;
+          return (
+            <Exercise
+              image={urlString}
+              id={parseInt(exerciseId)}
+              closeModal={closeModal}
+            />
+          );
         }}
+        showsHorizontalScrollIndicator={false}
+        directionalLockEnabled={true}
       ></FlatList>
-      {/* <FlatList
-        data={exercises}
-        keyExtractor={(exercise, index) => index}
-        renderItem={({ item }) => (
-          <Exercise name={item.name} uuid={item.uuid} />
-        )}
-      ></FlatList> */}
     </View>
   );
 };
 
 export default ExerciseSearch;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  container: {
+    alignItems: "center",
+  },
+  header: {
+    fontSize: 18,
+    fontWeight: 400,
+    marginBottom: 10,
+  },
+});

@@ -44,7 +44,7 @@ const HomeScreen = () => {
       });
 
     const fetchExerciseImages = (
-      url = "https://wger.de/api/v2/exerciseimage/?language=2/?is_main=True"
+      url = "https://wger.de/api/v2/exerciseimage/?is_main=True"
     ) => {
       return fetch(url)
         .then((response) => response.json())
