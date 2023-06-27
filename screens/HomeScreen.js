@@ -1,12 +1,72 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth, db } from "../firebase";
+import { useSetRecoilState } from "recoil";
+import {
+  exerciseImageState,
+  exerciseState,
+  workoutState,
+} from "../atoms/workoutAtom";
 
 const HomeScreen = () => {
   const navigation = useNavigation();
   const user = auth.currentUser;
+
+  const setExercises = useSetRecoilState(exerciseState);
+  const setWorkout = useSetRecoilState(workoutState);
+  const setExerciseImages = useSetRecoilState(exerciseImageState);
+
+  useEffect(() => {
+    const fetchAllExercises = (
+      url = "https://wger.de/api/v2/exercise/?language=2"
+    ) => {
+      return fetch(url)
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.next) {
+            return fetchAllExercises(data.next).then((nextPageExercises) =>
+              data.results.concat(nextPageExercises)
+            );
+          } else {
+            return data.results;
+          }
+        });
+    };
+
+    fetchAllExercises()
+      .then((exercises) => {
+        setExercises(exercises);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+
+    const fetchExerciseImages = (
+      url = "https://wger.de/api/v2/exerciseimage/?language=2/?is_main=True"
+    ) => {
+      return fetch(url)
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.next) {
+            return fetchExerciseImages(data.next).then((nextPageExercises) =>
+              data.results.concat(nextPageExercises)
+            );
+          } else {
+            return data.results;
+          }
+        });
+    };
+
+    fetchExerciseImages()
+      .then((exerciseImages) => {
+        setExerciseImages(exerciseImages);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }, []);
 
   const handleSignout = () => {
     signOut(auth)
@@ -16,6 +76,7 @@ const HomeScreen = () => {
 
   const createWorkout = async () => {
     navigation.navigate("Workout");
+    setWorkout([]);
   };
 
   return (

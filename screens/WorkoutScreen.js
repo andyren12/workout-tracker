@@ -10,22 +10,25 @@ import React, { useState } from "react";
 import { arrayUnion, doc, updateDoc } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import ExerciseSearch from "../components/ExerciseSearch";
+import { useRecoilValue } from "recoil";
+import { workoutState } from "../atoms/workoutAtom";
+import Exercise from "../components/Exercise";
 
 const WorkoutScreen = () => {
   const user = auth.currentUser;
   const startTime = new Date();
-  const [exercises, setExercises] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
+  const workout = useRecoilValue(workoutState);
+
+  const finishedWorkout = {
+    startTime: startTime,
+    workout: workout,
+  };
 
   const finishWorkout = async () => {
     try {
-      setExercises([]);
-      const workout = {
-        startTime: startTime,
-        exercises: exercises,
-      };
       await updateDoc(doc(db, "users", `${user.email}`), {
-        workouts: arrayUnion(workout),
+        workouts: arrayUnion(finishedWorkout),
       });
     } catch (error) {
       console.error(error);
@@ -39,6 +42,10 @@ const WorkoutScreen = () => {
   return (
     <View style={styles.container}>
       <Text>Workout</Text>
+      <Exercise
+        image="https://wger.de/media/exercise-images/81/Biceps-curl-1.png"
+        uuid={81}
+      />
       <TouchableOpacity onPress={addExercise} style={styles.button}>
         <Text style={styles.buttonText}>Add Exercise</Text>
       </TouchableOpacity>
