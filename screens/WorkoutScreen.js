@@ -1,104 +1,3 @@
-// import {
-//   Modal,
-//   StyleSheet,
-//   Text,
-//   TouchableOpacity,
-//   View,
-//   SafeAreaView,
-// } from "react-native";
-// import React, { useState } from "react";
-// import { arrayUnion, doc, updateDoc } from "firebase/firestore";
-// import { auth, db } from "../firebase";
-// import ExerciseSearch from "../components/ExerciseSearch";
-// import { useRecoilValue } from "recoil";
-// import { workoutState } from "../atoms/workoutAtom";
-// import Exercise from "../components/Exercise";
-
-// const WorkoutScreen = () => {
-//   const user = auth.currentUser;
-//   const startTime = new Date();
-//   const [modalVisible, setModalVisible] = useState(false);
-//   const workout = useRecoilValue(workoutState);
-
-//   const finishedWorkout = {
-//     startTime: startTime,
-//     workout: workout,
-//   };
-
-//   const finishWorkout = async () => {
-//     try {
-//       await updateDoc(doc(db, "users", `${user.email}`), {
-//         workouts: arrayUnion(finishedWorkout),
-//       });
-//     } catch (error) {
-//       console.error(error);
-//     }
-//   };
-
-//   const addExercise = () => {
-//     setModalVisible(true);
-//   };
-
-//   return (
-//     <View style={styles.container}>
-//       <Text>Workout</Text>
-//       <TouchableOpacity
-//         onPress={() => setModalVisible(true)}
-//         style={styles.button}
-//       >
-//         <Text style={styles.buttonText}>Add Exercise</Text>
-//       </TouchableOpacity>
-//       <TouchableOpacity onPress={finishWorkout} style={styles.button}>
-//         <Text style={styles.buttonText}>Finish Workout</Text>
-//       </TouchableOpacity>
-//       <Modal visible={modalVisible} animationType="slide">
-//         <SafeAreaView style={styles.centeredView}>
-//           <View style={styles.modalView}>
-//             <TouchableOpacity onPress={() => setModalVisible(false)}>
-//               <Text>Close</Text>
-//             </TouchableOpacity>
-//             <ExerciseSearch />
-//           </View>
-//         </SafeAreaView>
-//       </Modal>
-//     </View>
-//   );
-// };
-
-// export default WorkoutScreen;
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     justifyContent: "center",
-//     alignItems: "center",
-//   },
-//   button: {
-//     backgroundColor: "#0782F9",
-//     width: "60%",
-//     padding: 15,
-//     borderRadius: 10,
-//     alignItems: "center",
-//     marginTop: 40,
-//   },
-//   buttonText: {
-//     color: "white",
-//     fontWeight: "700",
-//     fontSize: 16,
-//   },
-//   centeredView: {
-//     flex: 1,
-//     justifyContent: "flex-end",
-//     alignItems: "center",
-//     marginTop: 22,
-//   },
-//   modalView: {
-//     height: "90%",
-//     width: "100%",
-//     paddingTop: 20,
-//   },
-// });
-
 import React, { useState } from "react";
 import {
   Modal,
@@ -109,19 +8,22 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
 } from "react-native";
-import ExerciseSearch from "../components/ExerciseSearch";
-import { auth } from "../firebase";
-import { useRecoilValue } from "recoil";
+import ExerciseModal from "../components/ExerciseModal";
+import { auth, db } from "../firebase";
+import { useRecoilState } from "recoil";
 import { workoutState } from "../atoms/workoutAtom";
+import Exercise from "../components/Exercise";
+import { arrayUnion, doc, updateDoc } from "firebase/firestore";
 
 const WorkoutScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const user = auth.currentUser;
   const startTime = new Date();
-  const workout = useRecoilValue(workoutState);
+  const [workout, setWorkout] = useRecoilState(workoutState);
 
   const finishedWorkout = {
     startTime: startTime,
+    endTime: new Date(),
     workout: workout,
   };
 
@@ -130,6 +32,7 @@ const WorkoutScreen = () => {
       await updateDoc(doc(db, "users", `${user.email}`), {
         workouts: arrayUnion(finishedWorkout),
       });
+      setWorkout([]);
     } catch (error) {
       console.error(error);
     }
@@ -153,13 +56,16 @@ const WorkoutScreen = () => {
           <View style={styles.modalOverlay}>
             <TouchableWithoutFeedback onPress={() => {}}>
               <View style={styles.modalView}>
-                <ExerciseSearch closeModal={closeModal} />
+                <ExerciseModal closeModal={closeModal} />
               </View>
             </TouchableWithoutFeedback>
           </View>
         </TouchableWithoutFeedback>
       </Modal>
 
+      {workout.map((exercise, index) => (
+        <Exercise key={index} exercise={exercise} />
+      ))}
       <TouchableHighlight
         style={styles.button}
         onPress={() => {
@@ -213,7 +119,8 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
-    marginTop: 40,
+    marginTop: 20,
+    marginBottom: 20,
   },
   buttonText: {
     color: "white",

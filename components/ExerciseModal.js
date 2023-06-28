@@ -6,27 +6,13 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useState } from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
-import {
-  exerciseImageState,
-  exerciseState,
-  workoutState,
-} from "../atoms/workoutAtom";
-import Exercise from "./Exercise";
+import React from "react";
+import { useRecoilValue } from "recoil";
+import { exerciseImageState } from "../atoms/workoutAtom";
+import ExerciseBanner from "./ExerciseBanner";
 
-const ExerciseSearch = ({ closeModal }) => {
+const ExerciseModal = ({ closeModal }) => {
   const exerciseImages = useRecoilValue(exerciseImageState);
-  const [workout, setWorkout] = useRecoilState(workoutState);
-  const [selectedExercise, setSelectedExercise] = useState();
-
-  const addExercise = () => {
-    setWorkout([
-      ...workout,
-      { exercise: "Push up", sets: 3, reps: 10 },
-      { exercise: "Sit up", sets: 2, reps: 15 },
-    ]);
-  };
 
   return (
     <View style={styles.container}>
@@ -40,7 +26,7 @@ const ExerciseSearch = ({ closeModal }) => {
           let exerciseId = pathnameParts[pathnameParts.length - 2];
 
           return (
-            <Exercise
+            <ExerciseBanner
               image={urlString}
               id={parseInt(exerciseId)}
               closeModal={closeModal}
@@ -54,7 +40,7 @@ const ExerciseSearch = ({ closeModal }) => {
   );
 };
 
-export default ExerciseSearch;
+export default ExerciseModal;
 
 const styles = StyleSheet.create({
   container: {

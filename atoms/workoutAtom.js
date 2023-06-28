@@ -14,8 +14,3 @@ export const workoutState = atom({
   key: "workout",
   default: [],
 });
-
-export const selectedExerciseState = atom({
-  key: "selectedExercise",
-  default: null,
-});

@@ -1,45 +1,34 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React from "react";
-import { useRecoilValue, useSetRecoilState } from "recoil";
-import { exerciseState, selectedExerciseState } from "../atoms/workoutAtom";
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import React, { useState } from "react";
+import Set from "./Set";
 
-const Exercise = ({ image, id, closeModal }) => {
-  const exercises = useRecoilValue(exerciseState);
-  const setSelectedExercise = useSetRecoilState(selectedExerciseState);
+const Exercise = ({ exercise }) => {
+  const [sets, setSets] = useState([1]);
 
-  const exercise = exercises.find((exercise) => exercise.id === id);
-
-  const categories = {
-    8: "Arms",
-    9: "Legs",
-    10: "Abs",
-    11: "Chest",
-    12: "Back",
-    13: "Shoulders",
-    14: "Calves",
-    15: "Cardio",
+  const addSet = () => {
+    setSets([...sets, sets.length + 1]);
   };
 
   return (
-    <View style={styles.itemContainer}>
-      {exercise && (
-        <TouchableOpacity
-          style={styles.container}
-          onPress={() => {
-            closeModal();
-            setSelectedExercise(id);
-          }}
-        >
-          <Image
-            source={{ uri: image, width: 50, height: 50 }}
-            resizeMode="contain"
-          />
-          <View>
-            <Text>{exercise.name}</Text>
-            <Text>{categories[exercise.category]}</Text>
-          </View>
-        </TouchableOpacity>
-      )}
+    <View style={styles.container}>
+      <Text>{exercise.exercise}</Text>
+      <View style={styles.attributes}>
+        <Text>Sets</Text>
+        <Text>lbs</Text>
+        <Text>Reps</Text>
+      </View>
+      {sets.map((set, index) => (
+        <Set key={index} num={index} />
+      ))}
+      <TouchableOpacity onPress={addSet}>
+        <Text>Add Set</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -48,16 +37,13 @@ export default Exercise;
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 30,
-    borderBottomColor: "black",
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    paddingLeft: 20,
-    paddingVertical: 10,
+    width: "75%",
+    gap: 15,
+    marginBottom: 30,
   },
-  itemContainer: {
-    flex: 1,
+  attributes: {
+    flexDirection: "row",
+    justifyContent: "space-between",
     width: "100%",
   },
 });
