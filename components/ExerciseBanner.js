@@ -22,7 +22,7 @@ const ExerciseBanner = ({ image, id, closeModal }) => {
 
   const addExercise = () => {
     closeModal();
-    setWorkout([...workout, { exercise: exercise.name }]);
+    setWorkout([...workout, { exercise: exercise.name, sets: [] }]);
   };
 
   return (

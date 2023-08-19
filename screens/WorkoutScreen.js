@@ -64,7 +64,7 @@ const WorkoutScreen = () => {
       </Modal>
 
       {workout.map((exercise, index) => (
-        <Exercise key={index} exercise={exercise} />
+        <Exercise key={index} exercise={exercise.exercise} />
       ))}
       <TouchableHighlight
         style={styles.button}
