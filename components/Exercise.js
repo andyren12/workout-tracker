@@ -5,22 +5,20 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Set from "./Set";
 import { useRecoilState } from "recoil";
 import { workoutState } from "../atoms/workoutAtom";
 
 const Exercise = ({ exercise }) => {
   const emptySet = {
-    lbs: 0,
-    reps: 0,
+    lbs: "",
+    reps: "",
   };
-  const [sets, setSets] = useState([emptySet]);
+  const [sets, setSets] = useState([]);
   const [workout, setWorkout] = useRecoilState(workoutState);
-
   const addSet = () => {
     setSets([...sets, emptySet]);
-    console.log(sets);
   };
 
   const onDelete = (setToDelete) => {
@@ -35,6 +33,10 @@ const Exercise = ({ exercise }) => {
       exerciseFound.sets = sets;
     }
   };
+
+  useEffect(() => {
+    addSet();
+  }, []);
 
   return (
     <View style={styles.container}>
